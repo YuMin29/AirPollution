@@ -1,29 +1,60 @@
 package com.yumin.airpollution;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.yumin.airpollution.databinding.ActivityMainBinding;
+
+import java.util.ArrayList;
 
 public class MainActivity extends DataBindingActivity {
     private static final String TAG = "[" + MainActivity.class.getSimpleName() + "]";
-    private MainViewModel mMainViewModel;
+    private MainViewModel mainViewModel;
+    private ActivityMainBinding activityMainBinding;
+    LinearLayoutManager verLayoutManager;
+    LinearLayoutManager horLayoutManager;
+    RecyclerAdapter horAdapter;
+    RecyclerAdapter verAdapter;
 
     @Override
     protected void initViewModel() {
-        mMainViewModel = getViewModel(MainViewModel.class);
+        mainViewModel = (MainViewModel) getViewModel(MainViewModel.class);
     }
 
     @Override
     protected DataBindingConfig getDataBindingConfig() {
-        return new DataBindingConfig(R.layout.activity_main, BR.viewModel, mMainViewModel);
+        return new DataBindingConfig(R.layout.activity_main, BR.viewModel, mainViewModel);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activityMainBinding = (ActivityMainBinding) getViewDataBinding();
+        horAdapter = new RecyclerAdapter(new ArrayList<>(),true);
+        verAdapter = new RecyclerAdapter(new ArrayList<>(),false);
+        setUp();
+    }
+
+    private void setUp() {
+        horLayoutManager = new LinearLayoutManager(this);
+        horLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        activityMainBinding.horRecyclerview.setLayoutManager(horLayoutManager);
+        activityMainBinding.horRecyclerview.setItemAnimator(new DefaultItemAnimator());
+        activityMainBinding.horRecyclerview.setAdapter(horAdapter);
+
+        verLayoutManager = new LinearLayoutManager(this);
+        verLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        activityMainBinding.verRecyclerView.setLayoutManager(verLayoutManager);
+        activityMainBinding.verRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        activityMainBinding.verRecyclerView.setAdapter(verAdapter);
+        activityMainBinding.verRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
     }
 
     @Override
@@ -34,7 +65,6 @@ public class MainActivity extends DataBindingActivity {
         searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                Log.d(TAG, "[onMenuItemClick]");
                 return false;
             }
         });
