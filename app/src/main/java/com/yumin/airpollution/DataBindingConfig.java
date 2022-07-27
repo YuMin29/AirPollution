@@ -5,36 +5,36 @@ import android.util.SparseArray;
 import androidx.lifecycle.ViewModel;
 
 public class DataBindingConfig {
-    private final int mLayout;
-    private final int mVmVariableId;
-    private final ViewModel mViewModel;
-    private SparseArray mBindingParams = new SparseArray();
+    private final int layout;
+    private final int vmVariableId;
+    private final ViewModel viewModel;
+    private SparseArray bindingParams = new SparseArray();
 
     public DataBindingConfig(int layout, int vmVariableId, ViewModel viewModel) {
-        mLayout = layout;
-        mVmVariableId = vmVariableId;
-        this.mViewModel = viewModel;
+        this.layout = layout;
+        this.vmVariableId = vmVariableId;
+        this.viewModel = viewModel;
     }
 
     public int getLayout() {
-        return mLayout;
+        return layout;
     }
 
     public int getVmVariableId() {
-        return mVmVariableId;
+        return vmVariableId;
     }
 
     public ViewModel getViewModel() {
-        return mViewModel;
+        return viewModel;
     }
 
     public SparseArray getBindingParams() {
-        return mBindingParams;
+        return bindingParams;
     }
 
     public void addBindingParam(int variableId, Object object) {
-        if (mBindingParams.get(variableId) == null) {
-            mBindingParams.put(variableId, object);
+        if (bindingParams.get(variableId) == null) {
+            bindingParams.put(variableId, object);
         }
     }
 }

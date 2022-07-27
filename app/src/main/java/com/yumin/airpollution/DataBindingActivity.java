@@ -14,9 +14,9 @@ import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-public abstract class DataBindingActivity extends AppCompatActivity {
-    private ViewDataBinding mViewDataBinding;
-    private ViewModelProvider mViewModelProvider;
+public abstract class DataBindingActivity<T extends ViewDataBinding> extends AppCompatActivity {
+    private T viewDataBinding;
+    private ViewModelProvider viewModelProvider;
 
     protected abstract void initViewModel();
 
@@ -29,26 +29,27 @@ public abstract class DataBindingActivity extends AppCompatActivity {
         performDataBinding();
     }
 
-    public ViewDataBinding getViewDataBinding() {
-        return mViewDataBinding;
+    public T getViewDataBinding() {
+        return viewDataBinding;
     }
 
     private void performDataBinding() {
         DataBindingConfig dataBindingConfig = this.getDataBindingConfig();
-        mViewDataBinding = DataBindingUtil.setContentView(this, dataBindingConfig.getLayout());
-        mViewDataBinding.setVariable(dataBindingConfig.getVmVariableId(), dataBindingConfig.getViewModel());
+        viewDataBinding = DataBindingUtil.setContentView(this, dataBindingConfig.getLayout());
+        viewDataBinding.setVariable(dataBindingConfig.getVmVariableId(), dataBindingConfig.getViewModel());
         SparseArray<Object> bindingParams = dataBindingConfig.getBindingParams();
         for (int i = 0; i < bindingParams.size(); ++i) {
-            mViewDataBinding.setVariable(bindingParams.keyAt(i), bindingParams.valueAt(i));
+            viewDataBinding.setVariable(bindingParams.keyAt(i), bindingParams.valueAt(i));
         }
-        mViewDataBinding.executePendingBindings();
+        viewDataBinding.executePendingBindings();
+        viewDataBinding.setLifecycleOwner(this);
     }
 
-    protected <T extends ViewModel> T getViewModel(@NonNull Class<T> modelClass) {
-        if (mViewModelProvider == null) {
-            mViewModelProvider = new ViewModelProvider(this);
+    protected <V extends ViewModel> V getViewModel(@NonNull Class<V> modelClass) {
+        if (viewModelProvider == null) {
+            viewModelProvider = new ViewModelProvider(this);
         }
-        return mViewModelProvider.get(modelClass);
+        return viewModelProvider.get(modelClass);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
