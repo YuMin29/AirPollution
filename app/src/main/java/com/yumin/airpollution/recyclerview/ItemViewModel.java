@@ -1,4 +1,4 @@
-package com.yumin.airpollution;
+package com.yumin.airpollution.recyclerview;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -13,7 +13,7 @@ public class ItemViewModel {
         this.listener = listener;
     }
 
-    public void onNormalClick(){
+    public void onNormalClick() {
         if (listener != null)
             listener.onItemClick();
     }

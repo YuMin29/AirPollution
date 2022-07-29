@@ -1,17 +1,23 @@
 package com.yumin.airpollution;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-public abstract class DataBindingActivity<T extends ViewDataBinding> extends AppCompatActivity {
+public abstract class DataBindingFragment<T extends ViewDataBinding> extends Fragment {
+    private AppCompatActivity activity;
     private T viewDataBinding;
     private ViewModelProvider viewModelProvider;
 
@@ -20,26 +26,34 @@ public abstract class DataBindingActivity<T extends ViewDataBinding> extends App
     protected abstract DataBindingConfig getDataBindingConfig();
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        activity = (AppCompatActivity) context;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.initViewModel();
-        performDataBinding();
+        initViewModel();
     }
 
-    public T getViewDataBinding() {
-        return viewDataBinding;
-    }
-
-    private void performDataBinding() {
-        DataBindingConfig dataBindingConfig = this.getDataBindingConfig();
-        viewDataBinding = DataBindingUtil.setContentView(this, dataBindingConfig.getLayout());
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        DataBindingConfig dataBindingConfig = getDataBindingConfig();
+        viewDataBinding = DataBindingUtil.inflate(inflater, dataBindingConfig.getLayout(), container, false);
+        viewDataBinding.setLifecycleOwner(this);
         viewDataBinding.setVariable(dataBindingConfig.getVmVariableId(), dataBindingConfig.getViewModel());
-        SparseArray<Object> bindingParams = dataBindingConfig.getBindingParams();
+        SparseArray bindingParams = dataBindingConfig.getBindingParams();
         for (int i = 0; i < bindingParams.size(); i++) {
             viewDataBinding.setVariable(bindingParams.keyAt(i), bindingParams.valueAt(i));
         }
         viewDataBinding.executePendingBindings();
-        viewDataBinding.setLifecycleOwner(this);
+        return viewDataBinding.getRoot();
+    }
+
+    protected T getBinding() {
+        return viewDataBinding;
     }
 
     protected <V extends ViewModel> V getViewModel(@NonNull Class<V> modelClass) {

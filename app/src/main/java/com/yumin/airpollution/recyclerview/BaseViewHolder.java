@@ -1,4 +1,4 @@
-package com.yumin.airpollution;
+package com.yumin.airpollution.recyclerview;
 
 import android.view.View;
 
@@ -9,5 +9,6 @@ public abstract class BaseViewHolder extends RecyclerView.ViewHolder {
     public BaseViewHolder(@NonNull View itemView) {
         super(itemView);
     }
+
     public abstract void onBind(int position);
 }

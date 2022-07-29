@@ -4,6 +4,7 @@ import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yumin.airpollution.data.Records;
+import com.yumin.airpollution.recyclerview.RecyclerAdapter;
 
 import java.util.List;
 

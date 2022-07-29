@@ -3,25 +3,19 @@ package com.yumin.airpollution;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.yumin.airpollution.databinding.ActivityMainBinding;
-
-import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends DataBindingActivity {
-    private static final String TAG = "[" + MainActivity.class.getSimpleName() + "]";
+    private static final String TAG = MainActivity.class.getSimpleName();
     private MainViewModel mainViewModel;
     private ActivityMainBinding activityMainBinding;
-    LinearLayoutManager verLayoutManager;
-    LinearLayoutManager horLayoutManager;
-    RecyclerAdapter horAdapter;
-    RecyclerAdapter verAdapter;
+    private static SearchViewListener searchViewListener = null;
 
     @Override
     protected void initViewModel() {
@@ -37,24 +31,25 @@ public class MainActivity extends DataBindingActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityMainBinding = (ActivityMainBinding) getViewDataBinding();
-        horAdapter = new RecyclerAdapter(new ArrayList<>(),true);
-        verAdapter = new RecyclerAdapter(new ArrayList<>(),false);
-        setUp();
-    }
+        mainViewModel.fragmentList.observe(this, new Observer<List<Fragment>>() {
+            @Override
+            public void onChanged(List<Fragment> fragments) {
+                activityMainBinding.viewPager.setAdapter(new FragmentStateAdapter(getSupportFragmentManager(),
+                        getLifecycle()) {
+                    @NonNull
+                    @Override
+                    public Fragment createFragment(int position) {
+                        return fragments.get(position);
+                    }
 
-    private void setUp() {
-        horLayoutManager = new LinearLayoutManager(this);
-        horLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        activityMainBinding.horRecyclerview.setLayoutManager(horLayoutManager);
-        activityMainBinding.horRecyclerview.setItemAnimator(new DefaultItemAnimator());
-        activityMainBinding.horRecyclerview.setAdapter(horAdapter);
-
-        verLayoutManager = new LinearLayoutManager(this);
-        verLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        activityMainBinding.verRecyclerView.setLayoutManager(verLayoutManager);
-        activityMainBinding.verRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        activityMainBinding.verRecyclerView.setAdapter(verAdapter);
-        activityMainBinding.verRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+                    @Override
+                    public int getItemCount() {
+                        return fragments.size();
+                    }
+                });
+            }
+        });
+        activityMainBinding.viewPager.setUserInputEnabled(false);
     }
 
     @Override
@@ -62,14 +57,22 @@ public class MainActivity extends DataBindingActivity {
         getMenuInflater().inflate(R.menu.activity_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.search);
-        searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                return false;
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                activityMainBinding.viewPager.setCurrentItem(1);
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                activityMainBinding.viewPager.setCurrentItem(0);
+                return true;
             }
         });
 
         SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setQueryHint(getString(R.string.enter_site_name));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -78,9 +81,20 @@ public class MainActivity extends DataBindingActivity {
 
             @Override
             public boolean onQueryTextChange(String s) {
+                if (searchViewListener != null)
+                    searchViewListener.onQueryTextChange(s);
                 return false;
             }
         });
+
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public static void setSearchViewListener(SearchViewListener listener){
+        searchViewListener = listener;
+    }
+
+    public interface SearchViewListener{
+        void onQueryTextChange(String queryString);
     }
 }
