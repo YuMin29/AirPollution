@@ -20,6 +20,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class HomeViewModel extends ViewModel {
     private static final String TAG = HomeViewModel.class.getSimpleName();
+    public static final int THRESHOLD = 10;
     public MutableLiveData<List<Records>> horListData;
     public MutableLiveData<List<Records>> verListData;
     public MutableLiveData<Boolean> isLoading;
@@ -70,7 +71,7 @@ public class HomeViewModel extends ViewModel {
 
         for (Records records : airQuality.getRecords()) {
             try {
-                if (Integer.valueOf(records.getPm25()) > 7) {
+                if (Integer.valueOf(records.getPm25()) > THRESHOLD) {
                     ver.add(records);
                 } else {
                     hor.add(records);
