@@ -8,7 +8,7 @@ public class RemoteRepository {
     private RemoteApiService remoteApiService;
 
     public RemoteRepository(){
-        remoteApiService = RemoteApiManager.newInstance().creat(RemoteApiService.class);
+        remoteApiService = RemoteApiManager.newInstance().create(RemoteApiService.class);
     }
 
     public Single<AirQuality> getAirQuality(){

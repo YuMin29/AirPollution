@@ -1,52 +1,47 @@
 package com.yumin.airpollution.fragment;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.yumin.airpollution.BR;
-import com.yumin.airpollution.DataBindingConfig;
-import com.yumin.airpollution.DataBindingFragment;
-import com.yumin.airpollution.R;
 import com.yumin.airpollution.databinding.FragmentHomeBinding;
 import com.yumin.airpollution.recyclerview.RecyclerAdapter;
 
 import java.util.ArrayList;
 
-public class HomeFragment extends DataBindingFragment {
+public class HomeFragment extends Fragment {
+    private static final String TAG = "[HomeFragment]";
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding fragmentHomeBinding;
     private RecyclerAdapter horAdapter;
     private RecyclerAdapter verAdapter;
 
-    public HomeFragment() {
-    }
-
+    @Nullable
     @Override
-    protected void initViewModel() {
-        homeViewModel = (HomeViewModel) getViewModel(HomeViewModel.class);
-    }
-
-    @Override
-    protected DataBindingConfig getDataBindingConfig() {
-        return new DataBindingConfig(R.layout.fragment_home, BR.viewModel, homeViewModel);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        fragmentHomeBinding = FragmentHomeBinding.inflate(inflater,container,false);
+        return fragmentHomeBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fragmentHomeBinding = (FragmentHomeBinding) getBinding();
         horAdapter = new RecyclerAdapter(new ArrayList<>(), true);
         verAdapter = new RecyclerAdapter(new ArrayList<>(), false);
-        setUp();
+        init();
+        observeViewModel();
     }
 
-    private void setUp() {
+    private void init() {
+        homeViewModel = new HomeViewModel();
 
         LinearLayoutManager horLayoutManager;
         horLayoutManager = new LinearLayoutManager(getContext());
@@ -63,5 +58,26 @@ public class HomeFragment extends DataBindingFragment {
         fragmentHomeBinding.verRecyclerView.setAdapter(verAdapter);
         fragmentHomeBinding.verRecyclerView.addItemDecoration(
                 new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+    }
+
+    private void observeViewModel() {
+        homeViewModel.isLoading.observe(getViewLifecycleOwner(), loading ->
+                fragmentHomeBinding.progressBar.setVisibility(loading ? View.VISIBLE : View.GONE));
+
+        homeViewModel.verListData.observe(getViewLifecycleOwner(), items -> {
+            verAdapter.clearItems();
+            verAdapter.addItems(items);
+        });
+
+        homeViewModel.horListData.observe(getViewLifecycleOwner(), items -> {
+            horAdapter.clearItems();
+            horAdapter.addItems(items);
+        });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        fragmentHomeBinding = null;
     }
 }

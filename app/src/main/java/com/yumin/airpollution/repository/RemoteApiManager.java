@@ -30,7 +30,7 @@ public class RemoteApiManager {
                 .build();
     }
 
-    public <T> T creat(Class<T> t) {
+    public <T> T create(Class<T> t) {
         return retrofit.create(t);
     }
 

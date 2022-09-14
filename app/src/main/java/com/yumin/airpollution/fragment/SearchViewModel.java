@@ -20,16 +20,16 @@ import io.reactivex.schedulers.Schedulers;
 
 public class SearchViewModel extends ViewModel {
     private static final String TAG = SearchViewModel.class.getSimpleName();
-    public MutableLiveData<Boolean> isEmpty = new MutableLiveData<>();
+    public MutableLiveData<Boolean> isQueryStringEmpty = new MutableLiveData<>();
     public MutableLiveData<Boolean> notFind = new MutableLiveData<>();
     public MutableLiveData<String> notFindString = new MutableLiveData<>();
     public MutableLiveData<List<Records>> searchList = new MutableLiveData<>();
     private RemoteRepository remoteRepository;
-    private List<Records> list = new ArrayList<>();
+    private List<Records> records = new ArrayList<>();
 
     public SearchViewModel() {
-        isEmpty.postValue(true);
-        notFind.postValue(false);
+        isQueryStringEmpty.setValue(true);
+        notFind.setValue(false);
         remoteRepository = new RemoteRepository();
         fetchData();
     }
@@ -49,7 +49,7 @@ public class SearchViewModel extends ViewModel {
                     public void onSuccess(Object o) {
                         Log.d(TAG, "[onSuccess] size = " + ((AirQuality) o).getRecords().size());
                         if (((AirQuality) o).getRecords().size() > 0) {
-                            list = ((AirQuality) o).getRecords();
+                            records = ((AirQuality) o).getRecords();
                         }
                     }
 
@@ -61,36 +61,34 @@ public class SearchViewModel extends ViewModel {
     }
 
     public void onQueryTextChange(String queryString, String notFindWarning) {
-        isEmpty.postValue(queryString.isEmpty());
-        notFind.postValue(false);
+        isQueryStringEmpty.setValue(queryString.isEmpty());
 
-        if (!queryString.isEmpty()) {
-            Filter filter = new Filter() {
-                @Override
-                protected FilterResults performFiltering(CharSequence charSequence) {
-                    ArrayList<Records> filteredList = new ArrayList<>();
-                    for (Records records : list) {
-                        if (records.getSiteName().contains(charSequence.toString())) {
-                            filteredList.add(records);
-                        }
-                    }
-                    FilterResults filterResults = new FilterResults();
-                    filterResults.values = filteredList;
-                    return filterResults;
-                }
-
-                @Override
-                protected void publishResults(CharSequence constraint, FilterResults results) {
-                    List<Records> resultList = (List<Records>) results.values;
-                    if (resultList.size() > 0) {
-                        searchList.postValue((List<Records>) results.values);
-                    } else {
-                        notFind.postValue(true);
-                        notFindString.postValue(notFindWarning);
+        Filter filter = new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                ArrayList<Records> filteredList = new ArrayList<>();
+                for (Records records : records) {
+                    if (records.getSiteName().contains(charSequence.toString())) {
+                        filteredList.add(records);
                     }
                 }
-            };
-            filter.filter(queryString);
-        }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = filteredList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                List<Records> resultList = (List<Records>) results.values;
+                if (resultList.size() > 0) {
+                    searchList.setValue((List<Records>) results.values);
+                    notFind.setValue(false);
+                } else {
+                    notFind.setValue(true);
+                    notFindString.setValue(notFindWarning);
+                }
+            }
+        };
+        filter.filter(queryString);
     }
 }

@@ -20,7 +20,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class HomeViewModel extends ViewModel {
     private static final String TAG = HomeViewModel.class.getSimpleName();
-    public static final int THRESHOLD = 10;
+    public static final int THRESHOLD = 30;
     public MutableLiveData<List<Records>> horListData;
     public MutableLiveData<List<Records>> verListData;
     public MutableLiveData<Boolean> isLoading;
@@ -35,7 +35,7 @@ public class HomeViewModel extends ViewModel {
     }
 
     public void fetchData() {
-        isLoading.postValue(true);
+        isLoading.setValue(true);
         remoteRepository
                 .getAirQuality()
                 .subscribeOn(Schedulers.newThread())
@@ -50,22 +50,22 @@ public class HomeViewModel extends ViewModel {
                     public void onSuccess(Object o) {
                         Log.d(TAG, "[onSuccess]");
                         processData(o);
-                        isLoading.postValue(false);
+                        isLoading.setValue(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "[onError] error = " + e.getMessage());
-                        isLoading.postValue(false);
+                        isLoading.setValue(false);
                     }
                 });
     }
 
-    private void processData(Object o) {
-        if (o == null)
+    private void processData(Object object) {
+        if (object == null)
             return;
 
-        final AirQuality airQuality = (AirQuality) o;
+        final AirQuality airQuality = (AirQuality) object;
         List<Records> hor = new ArrayList<>();
         List<Records> ver = new ArrayList<>();
 
@@ -81,16 +81,7 @@ public class HomeViewModel extends ViewModel {
             }
         }
 
-        verListData.postValue(ver);
-        horListData.postValue(hor);
-    }
-
-
-    public LiveData<List<Records>> getHorListData() {
-        return horListData;
-    }
-
-    public LiveData<List<Records>> getVerListData() {
-        return verListData;
+        verListData.setValue(ver);
+        horListData.setValue(hor);
     }
 }
