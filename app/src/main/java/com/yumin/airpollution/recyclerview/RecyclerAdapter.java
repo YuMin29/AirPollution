@@ -21,32 +21,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private boolean isHorizontal;
     private List<Records> recordList;
 
-//    Filter filter = new Filter() {
-//        @Override
-//        protected FilterResults performFiltering(CharSequence constraint) {
-//            ArrayList<Records> filteredList = new ArrayList<>();
-//            if (constraint == null || constraint.length() == 0) {
-//                filteredList.addAll(recordList);
-//            } else {
-//                for (Records records : recordList) {
-//                    if (records.getSiteName().contains(constraint.toString())) {
-//                        filteredList.add(records);
-//                    }
-//                }
-//            }
-//            FilterResults filterResults = new FilterResults();
-//            filterResults.values = filteredList;
-//            return filterResults;
-//        }
-//
-//        @Override
-//        protected void publishResults(CharSequence constraint, FilterResults results) {
-//            recordList.clear();
-//            recordList.addAll((Collection<? extends Records>) results.values);
-//            notifyDataSetChanged();
-//        }
-//    };
-
     public RecyclerAdapter(List<Records> recordsList, boolean isHorizontal) {
         this.recordList = recordsList;
         this.isHorizontal = isHorizontal;
@@ -115,12 +89,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
         @Override
         public void onBind(int position) {
-            final Records airQuality = recordList.get(position);
-            horItemViewBinding.siteId.setText(airQuality.getSiteId());
-            horItemViewBinding.siteName.setText(airQuality.getSiteName());
-            horItemViewBinding.pm25.setText(airQuality.getPm25());
-            horItemViewBinding.siteCounty.setText(airQuality.getCounty());
-            horItemViewBinding.siteStatus.setText(airQuality.getStatus());
+            final Records records = recordList.get(position);
+            horItemViewBinding.siteId.setText(records.getSiteId());
+            horItemViewBinding.siteName.setText(records.getSiteName());
+            horItemViewBinding.pm25.setText(records.getPm25());
+            horItemViewBinding.siteCounty.setText(records.getCounty());
+            horItemViewBinding.siteStatus.setText(records.getStatus());
         }
     }
 
@@ -134,11 +108,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
         @Override
         public void onBind(int position) {
-            final Records airQuality = recordList.get(position);
-            verItemGoodBinding.goodSiteId.setText(airQuality.getSiteId());
-            verItemGoodBinding.goodPm25.setText(airQuality.getPm25());
-            verItemGoodBinding.siteName.setText(airQuality.getSiteName());
-            verItemGoodBinding.county.setText(airQuality.getCounty());
+            final Records records = recordList.get(position);
+            verItemGoodBinding.goodSiteId.setText(records.getSiteId());
+            verItemGoodBinding.goodPm25.setText(records.getPm25());
+            verItemGoodBinding.siteName.setText(records.getSiteName());
+            verItemGoodBinding.county.setText(records.getCounty());
         }
     }
 

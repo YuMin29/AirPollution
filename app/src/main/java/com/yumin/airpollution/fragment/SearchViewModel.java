@@ -25,7 +25,7 @@ public class SearchViewModel extends ViewModel {
     public MutableLiveData<String> notFindString = new MutableLiveData<>();
     public MutableLiveData<List<Records>> searchList = new MutableLiveData<>();
     private RemoteRepository remoteRepository;
-    private List<Records> records = new ArrayList<>();
+    private List<Records> recordList = new ArrayList<>();
 
     public SearchViewModel() {
         isQueryStringEmpty.setValue(true);
@@ -49,7 +49,7 @@ public class SearchViewModel extends ViewModel {
                     public void onSuccess(Object o) {
                         Log.d(TAG, "[onSuccess] size = " + ((AirQuality) o).getRecords().size());
                         if (((AirQuality) o).getRecords().size() > 0) {
-                            records = ((AirQuality) o).getRecords();
+                            recordList = ((AirQuality) o).getRecords();
                         }
                     }
 
@@ -67,7 +67,7 @@ public class SearchViewModel extends ViewModel {
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
                 ArrayList<Records> filteredList = new ArrayList<>();
-                for (Records records : records) {
+                for (Records records : recordList) {
                     if (records.getSiteName().contains(charSequence.toString())) {
                         filteredList.add(records);
                     }

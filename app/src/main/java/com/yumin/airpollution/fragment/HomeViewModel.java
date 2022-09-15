@@ -77,7 +77,7 @@ public class HomeViewModel extends ViewModel {
                     hor.add(records);
                 }
             } catch (Exception exception) {
-
+                Log.d(TAG,"Exception = "+exception.getMessage());
             }
         }
 

@@ -93,7 +93,7 @@
                         android:layout_alignParentRight="true"
                         android:ellipsize="end"
                         android:singleLine="true"
-                        android:text="@string/status_good"
+                        android:text="@string/status_good_desc"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/guideline3"

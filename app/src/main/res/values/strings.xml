@@ -3,5 +3,5 @@
     <string name="enter_site_name">請輸入「站名」</string>
     <string name="empty_enter_site_name">輸入「站名」\n 查詢該地區空汙資訊</string>
     <string name="not_find_site_name">找不到「%1$s」\n 相關的空汙資訊</string>
-    <string name="status_good">The status is good, we want to go out to have fun</string>
+    <string name="status_good_desc">The status is good, we want to go out to have fun</string>
 </resources>
